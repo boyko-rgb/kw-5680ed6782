@@ -1,0 +1,690 @@
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Garant Keyword Radar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ground:#F6F4EF; --surface:#FFFFFF; --surface-2:#EFEBE3;
+    --ink:#16283E; --ink-soft:#5A6B7E; --ink-faint:#8B98A6;
+    --line:#DED8CD; --line-soft:#E9E4DA; --accent:#B8862B;
+    --go:#1F6F4A; --go-bg:#DDEDE3; --ok:#8A6410; --ok-bg:#F2E8D2;
+    --busy:#9B3B32; --busy-bg:#F2DEDB; --bar:#C9BEA6;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --ground:#0E1822; --surface:#16283E; --surface-2:#1D3350;
+    --ink:#E9E5DC; --ink-soft:#A9B6C4; --ink-faint:#7B8895;
+    --line:#2A3F58; --line-soft:#223349; --accent:#E0AD4C;
+    --go:#6FCB9B; --go-bg:#173A2A; --ok:#E0AD4C; --ok-bg:#3A2F17;
+    --busy:#E58A7E; --busy-bg:#3D211D; --bar:#3A4F6B;
+    color-scheme:dark; } }
+  :root[data-theme="dark"]{
+    --ground:#0E1822; --surface:#16283E; --surface-2:#1D3350;
+    --ink:#E9E5DC; --ink-soft:#A9B6C4; --ink-faint:#7B8895;
+    --line:#2A3F58; --line-soft:#223349; --accent:#E0AD4C;
+    --go:#6FCB9B; --go-bg:#173A2A; --ok:#E0AD4C; --ok-bg:#3A2F17;
+    --busy:#E58A7E; --busy-bg:#3D211D; --bar:#3A4F6B;
+    color-scheme:dark; }
+
+  body{background:var(--ground); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.55;}
+  .wrap{max-width:1120px; margin:0 auto; padding-inline:20px; padding-block:40px 64px;}
+  h1,h2{font-family:Archivo,system-ui,sans-serif; text-wrap:balance; margin:0;}
+  h1{font-size:clamp(28px,5vw,40px); font-weight:700; letter-spacing:-.02em; line-height:1.1;}
+  h2{font-size:19px; font-weight:600;}
+  .eyebrow{font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:10px;}
+  .lede{color:var(--ink-soft); max-width:64ch; margin-top:14px; font-size:16px;}
+  .meta{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:22px; font-size:12.5px;
+    color:var(--ink-faint); border-top:1px solid var(--line); padding-top:16px;}
+  .meta b{color:var(--ink-soft); font-weight:600;}
+  .callout{margin-top:30px; background:var(--surface); border:1px solid var(--line);
+    border-left:3px solid var(--accent); border-radius:3px; padding:18px 22px;}
+  .callout p{margin:8px 0 0; color:var(--ink-soft); max-width:72ch;}
+  .callout .big{font-family:Archivo,sans-serif; font-weight:700; color:var(--ink);}
+
+  .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:14px;}
+  .row:first-of-type{margin-top:34px;}
+  .rlabel{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-faint); width:100%; margin-bottom:-2px;}
+  .chip{font:inherit; font-size:12.5px; font-weight:500; cursor:pointer;
+    background:var(--surface); color:var(--ink-soft); border:1px solid var(--line);
+    border-radius:999px; padding:6px 13px;}
+  .chip[aria-pressed="true"]{background:var(--ink); color:var(--ground); border-color:var(--ink);}
+  .chip:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .count{font-size:12.5px; color:var(--ink-faint); margin-left:auto;}
+
+  .tablewrap{overflow-x:auto; margin-top:18px; border:1px solid var(--line);
+    border-radius:4px; background:var(--surface);}
+  table{border-collapse:collapse; width:100%; min-width:720px;}
+  th,td{text-align:left; padding:10px 14px; border-bottom:1px solid var(--line-soft);}
+  th{font-family:Archivo,sans-serif; font-size:11px; font-weight:600; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--ink-faint); background:var(--surface-2);
+    position:sticky; top:env(safe-area-inset-top,0px); cursor:pointer; white-space:nowrap;}
+  th[aria-sort="descending"]::after{content:" \2193"; color:var(--accent);}
+  th[aria-sort="ascending"]::after{content:" \2191"; color:var(--accent);}
+  tbody tr:last-child td{border-bottom:0;}
+  tbody tr:hover{background:var(--surface-2);}
+  .kw{font-weight:500;}
+  .num{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap;}
+  .clu{font-size:12px; color:var(--ink-faint); white-space:nowrap;}
+  .barcell{width:120px;} .bar{height:6px; background:var(--bar); border-radius:2px; min-width:2px;}
+  .tag{display:inline-block; font-size:11.5px; font-weight:600; padding:2px 9px;
+    border-radius:3px; white-space:nowrap;}
+  .t-go{background:var(--go-bg); color:var(--go);}
+  .t-ok{background:var(--ok-bg); color:var(--ok);}
+  .t-busy{background:var(--busy-bg); color:var(--busy);}
+  .note{margin-top:14px; font-size:13px; color:var(--ink-faint); max-width:74ch;}
+  .foot{margin-top:44px; border-top:1px solid var(--line); padding-top:20px;
+    font-size:13px; color:var(--ink-faint); max-width:74ch;}
+  .foot h2{font-size:15px; color:var(--ink); margin-bottom:8px;}
+  .foot p{margin:0 0 10px;}
+  code{font-family:ui-monospace,monospace; font-size:12.5px; background:var(--surface-2);
+    padding:1px 5px; border-radius:3px;}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Garant IN &middot; YouTube &middot; 6 &#1086;&#1082;&#1090;&#1103;&#1073;&#1088;&#1103; 2026</div>
+  <h1>&#1063;&#1090;&#1086; &#1080;&#1097;&#1091;&#1090; &#1085;&#1072; YouTube</h1>
+  <p class="lede">470 &#1079;&#1072;&#1087;&#1088;&#1086;&#1089;&#1086;&#1074; &#1089; &#1095;&#1072;&#1089;&#1090;&#1086;&#1090;&#1085;&#1086;&#1089;&#1090;&#1100;&#1102; &#1080; &#1082;&#1086;&#1085;&#1082;&#1091;&#1088;&#1077;&#1085;&#1094;&#1080;&#1077;&#1081; &mdash; &#1090;&#1086;&#1083;&#1100;&#1082;&#1086; &#1085;&#1072;&#1096; &#1087;&#1088;&#1086;&#1076;&#1091;&#1082;&#1090;.
+  &#1044;&#1074;&#1072; &#1088;&#1103;&#1076;&#1072; &#1092;&#1080;&#1083;&#1100;&#1090;&#1088;&#1086;&#1074;: &#1088;&#1072;&#1079;&#1076;&#1077;&#1083; &#1080; &#1088;&#1077;&#1075;&#1080;&#1086;&#1085;. &#1056;&#1072;&#1079;&#1076;&#1077;&#1083;&#1099; &#1086;&#1076;&#1080;&#1085;&#1072;&#1082;&#1086;&#1074;&#1099; &#1074; &#1086;&#1073;&#1077;&#1080;&#1093; &#1103;&#1079;&#1099;&#1082;&#1072;&#1093;.</p>
+
+  <div class="meta">
+    <span><b>&#1054;&#1073;&#1098;&#1105;&#1084;</b> &mdash; &#1079;&#1072;&#1087;&#1088;&#1086;&#1089;&#1086;&#1074; &#1074; &#1084;&#1077;&#1089;&#1103;&#1094;, &#1087;&#1086;&#1080;&#1089;&#1082; YouTube, &#1073;&#1077;&#1079; &#1075;&#1077;&#1086;</span>
+    <span><b>&#1050;&#1086;&#1085;&#1082;&#1091;&#1088;&#1077;&#1085;&#1094;&#1080;&#1103;</b> &mdash; &#1085;&#1080;&#1078;&#1077; &#1079;&#1085;&#1072;&#1095;&#1080;&#1090; &#1083;&#1077;&#1075;&#1095;&#1077; &#1087;&#1088;&#1086;&#1073;&#1080;&#1090;&#1100;&#1089;&#1103;</span>
+    <span><b>&#1054;&#1094;&#1077;&#1085;&#1082;&#1072;</b> &mdash; &#1089;&#1074;&#1086;&#1076;&#1085;&#1099;&#1081; &#1073;&#1072;&#1083;&#1083; vidIQ</span>
+  </div>
+
+  <div class="callout">
+    <h2>&#1043;&#1083;&#1072;&#1074;&#1085;&#1086;&#1077;</h2>
+    <p><span class="big">&#1053;&#1080;&#1096;&#1072; &#1088;&#1086;&#1074;&#1085;&#1072;&#1103; &mdash; &#1088;&#1077;&#1096;&#1072;&#1077;&#1090; &#1082;&#1086;&#1085;&#1082;&#1091;&#1088;&#1077;&#1085;&#1094;&#1080;&#1103;.</span>
+    &#1055;&#1086;&#1095;&#1090;&#1080; &#1074;&#1089;&#1105; &#1083;&#1077;&#1078;&#1080;&#1090; &#1074; &#1076;&#1080;&#1072;&#1087;&#1072;&#1079;&#1086;&#1085;&#1077; 3&ndash;5 &#1090;&#1099;&#1089;&#1103;&#1095;, &#1088;&#1072;&#1079;&#1073;&#1088;&#1086;&#1089; &#1087;&#1086; &#1086;&#1073;&#1098;&#1105;&#1084;&#1091; &#1084;&#1072;&#1083;&#1077;&#1085;&#1100;&#1082;&#1080;&#1081;.
+    &#1057;&#1086;&#1088;&#1090;&#1080;&#1088;&#1091;&#1081; &#1085;&#1077; &#1087;&#1086; &#1086;&#1073;&#1098;&#1105;&#1084;&#1091;, &#1072; &#1087;&#1086; &#1082;&#1086;&#1085;&#1082;&#1091;&#1088;&#1077;&#1085;&#1094;&#1080;&#1080;: &#1087;&#1088;&#1080; &#1088;&#1072;&#1074;&#1085;&#1086;&#1084; &#1089;&#1087;&#1088;&#1086;&#1089;&#1077; &#1088;&#1072;&#1079;&#1085;&#1080;&#1094;&#1072;
+    &#1084;&#1077;&#1078;&#1076;&#1091; &laquo;&#1086;&#1095;&#1077;&#1085;&#1100; &#1085;&#1080;&#1079;&#1082;&#1086;&#1081;&raquo; &#1080; &laquo;&#1089;&#1088;&#1077;&#1076;&#1085;&#1077;&#1081;&raquo; &#1088;&#1077;&#1096;&#1072;&#1077;&#1090; &#1074;&#1089;&#1105;. &#1057;&#1072;&#1084;&#1099;&#1077; &#1089;&#1074;&#1086;&#1073;&#1086;&#1076;&#1085;&#1099;&#1077; &#1073;&#1083;&#1086;&#1082;&#1080; &mdash;
+    &#1089;&#1090;&#1072;&#1088;&#1090;&#1072;&#1087;-&#1074;&#1080;&#1079;&#1099; &#1080; &#1094;&#1080;&#1092;&#1088;&#1086;&#1074;&#1086;&#1081; &#1082;&#1086;&#1095;&#1077;&#1074;&#1085;&#1080;&#1082;, &#1090;&#1072;&#1084; &#1087;&#1086;&#1095;&#1090;&#1080; &#1089;&#1087;&#1083;&#1086;&#1096;&#1085;&#1086;&#1077; &#1079;&#1077;&#1083;&#1105;&#1085;&#1086;&#1077;.</p>
+  </div>
+
+  <div class="row" role="group"><span class="rlabel">&#1071;&#1079;&#1099;&#1082;</span>
+    <button class="chip lang" data-l="en" aria-pressed="true">English</button>
+    <button class="chip lang" data-l="ru" aria-pressed="false">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</button>
+  </div>
+  <div class="row" id="types" role="group"><span class="rlabel">&#1056;&#1072;&#1079;&#1076;&#1077;&#1083;</span></div>
+  <div class="row" id="regions" role="group"><span class="rlabel">&#1056;&#1077;&#1075;&#1080;&#1086;&#1085;</span></div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th data-k="kw">&#1060;&#1088;&#1072;&#1079;&#1072;</th>
+        <th data-k="vol" class="num" aria-sort="descending">&#1054;&#1073;&#1098;&#1105;&#1084;</th>
+        <th class="barcell"></th>
+        <th data-k="compN">&#1050;&#1086;&#1085;&#1082;&#1091;&#1088;&#1077;&#1085;&#1094;&#1080;&#1103;</th>
+        <th data-k="score" class="num">&#1054;&#1094;&#1077;&#1085;&#1082;&#1072;</th>
+        <th data-k="typ">&#1056;&#1072;&#1079;&#1076;&#1077;&#1083;</th>
+        <th data-k="reg">&#1056;&#1077;&#1075;&#1080;&#1086;&#1085;</th>
+      </tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+  </div>
+
+  <p class="note">&#1047;&#1077;&#1083;&#1105;&#1085;&#1099;&#1084; &mdash; &#1086;&#1095;&#1077;&#1085;&#1100; &#1085;&#1080;&#1079;&#1082;&#1072;&#1103; &#1082;&#1086;&#1085;&#1082;&#1091;&#1088;&#1077;&#1085;&#1094;&#1080;&#1103;, &#1090;&#1091;&#1076;&#1072; &#1080; &#1089;&#1085;&#1080;&#1084;&#1072;&#1090;&#1100; &#1074; &#1087;&#1077;&#1088;&#1074;&#1091;&#1102; &#1086;&#1095;&#1077;&#1088;&#1077;&#1076;&#1100;.
+  &laquo;&lt;750&raquo; &mdash; vidIQ &#1085;&#1077; &#1088;&#1072;&#1089;&#1082;&#1088;&#1099;&#1074;&#1072;&#1077;&#1090; &#1090;&#1086;&#1095;&#1085;&#1099;&#1081; &#1086;&#1073;&#1098;&#1105;&#1084; &#1085;&#1080;&#1078;&#1077; &#1101;&#1090;&#1086;&#1075;&#1086; &#1087;&#1086;&#1088;&#1086;&#1075;&#1072;. &#1057;&#1086;&#1088;&#1090;&#1080;&#1088;&#1086;&#1074;&#1082;&#1072; &mdash; &#1082;&#1083;&#1080;&#1082; &#1087;&#1086; &#1079;&#1072;&#1075;&#1086;&#1083;&#1086;&#1074;&#1082;&#1091;.</p>
+
+  <div class="foot">
+    <h2>&#1063;&#1077;&#1075;&#1086; &#1079;&#1076;&#1077;&#1089;&#1100; &#1085;&#1077;&#1090;</h2>
+    <p><b>&#1056;&#1072;&#1079;&#1073;&#1080;&#1074;&#1082;&#1080; &#1087;&#1086; &#1072;&#1091;&#1076;&#1080;&#1090;&#1086;&#1088;&#1080;&#1080;.</b> vidIQ &#1089;&#1095;&#1080;&#1090;&#1072;&#1077;&#1090; &#1087;&#1086;&#1080;&#1089;&#1082; YouTube &#1073;&#1077;&#1079; &#1075;&#1077;&#1086;.
+    &#1059;&#1079;&#1085;&#1072;&#1090;&#1100;, &#1095;&#1090;&#1086; &#1089;&#1087;&#1088;&#1072;&#1096;&#1080;&#1074;&#1072;&#1102;&#1090; &#1083;&#1102;&#1076;&#1080;, <em>&#1078;&#1080;&#1074;&#1091;&#1097;&#1080;&#1077;</em> &#1074; &#1069;&#1084;&#1080;&#1088;&#1072;&#1090;&#1072;&#1093;, &#1048;&#1085;&#1076;&#1080;&#1080;, &#1055;&#1072;&#1082;&#1080;&#1089;&#1090;&#1072;&#1085;&#1077;
+    &#1080; &#1057;&#1072;&#1091;&#1076;&#1086;&#1074;&#1089;&#1082;&#1086;&#1081; &#1040;&#1088;&#1072;&#1074;&#1080;&#1080;, &#1084;&#1086;&#1078;&#1085;&#1086; &#1090;&#1086;&#1083;&#1100;&#1082;&#1086; &#1095;&#1077;&#1088;&#1077;&#1079; Google Keyword Planner &mdash;
+    &#1086;&#1085; &#1078;&#1076;&#1105;&#1090; 2FA &#1085;&#1072; <code>product@garant.in</code>.</p>
+    <p><b>&#1064;&#1080;&#1088;&#1086;&#1082;&#1080;&#1093; &#1089;&#1086;&#1089;&#1077;&#1076;&#1077;&#1081;.</b> &#1053;&#1077;&#1076;&#1074;&#1080;&#1078;&#1080;&#1084;&#1086;&#1089;&#1090;&#1100;, &#1080;&#1085;&#1074;&#1077;&#1089;&#1090;&#1080;&#1094;&#1080;&#1080;, &#1085;&#1072;&#1083;&#1086;&#1075;&#1080;, &#1087;&#1077;&#1088;&#1077;&#1077;&#1079;&#1076;
+    &#1080; &#1078;&#1080;&#1079;&#1085;&#1100; &#1074; &#1054;&#1040;&#1069; &#1080; &#1057;&#1072;&#1091;&#1076;&#1086;&#1074;&#1089;&#1082;&#1086;&#1081; &#1040;&#1088;&#1072;&#1074;&#1080;&#1080; &#1080;&#1089;&#1082;&#1083;&#1102;&#1095;&#1077;&#1085;&#1099;: &#1101;&#1090;&#1086; &#1085;&#1077; &#1085;&#1072;&#1096; &#1087;&#1088;&#1086;&#1076;&#1091;&#1082;&#1090;.</p>
+  </div>
+</div>
+
+<script>
+const EN=`
+passport|66734|High|57|CITIZENSHIP|GENERAL
+cbi|44753|High|55|CITIZENSHIP|GENERAL
+first class citizen|19950|Very low|72|CITIZENSHIP|GENERAL
+us passport|12212|Low|62|CITIZENSHIP|USA
+offshore citizen|11632|Low|66|CITIZENSHIP|GENERAL
+dominica passport|9669|Low|63|CITIZENSHIP|CARIBBEAN
+citizenship by descent|8180|Low|63|CITIZENSHIP|GENERAL
+how to apply for canadian citizenship|7491|Low|66|CITIZENSHIP|GENERAL
+caribbean citizenship by investment|6776|Medium|55|CITIZENSHIP|CARIBBEAN
+us citizenship|6628|High|50|CITIZENSHIP|USA
+global citizen|6105|High|48|CITIZENSHIP|GENERAL
+usa passport|5420|Medium|56|CITIZENSHIP|USA
+turkish citizenship|5385|Low|62|CITIZENSHIP|TURKEY
+african passport|5378|Low|61|CITIZENSHIP|GENERAL
+citizenship|5332|High|46|CITIZENSHIP|GENERAL
+eu citizenship|5315|Medium|52|CITIZENSHIP|EUROPE
+get a second passport|5285|Low|60|CITIZENSHIP|GENERAL
+pakistani passport|5263|Medium|50|CITIZENSHIP|GENERAL
+second passport|5259|Medium|55|CITIZENSHIP|GENERAL
+citizenship by exception|5231|Low|63|CITIZENSHIP|GENERAL
+dominica citizenship by investment|5219|Low|62|CITIZENSHIP|CARIBBEAN
+panama citizenship|5191|Very low|67|CITIZENSHIP|LATAM
+hungarian citizenship|5190|Very low|67|CITIZENSHIP|EUROPE
+second citizenship|5170|Very low|66|CITIZENSHIP|GENERAL
+malta citizenship by merit|5161|Very low|68|CITIZENSHIP|EUROPE
+mexico citizenship|5101|Low|63|CITIZENSHIP|LATAM
+cheapest citizenship by investment|5071|Low|59|CITIZENSHIP|GENERAL
+dual citizenship|5068|Medium|56|CITIZENSHIP|GENERAL
+french passport|5064|Low|60|CITIZENSHIP|EUROPE
+greek passport|5054|Very low|66|CITIZENSHIP|EUROPE
+italian citizenship by descent|5022|Medium|56|CITIZENSHIP|EUROPE
+botswana citizenship|5019|Very low|66|CITIZENSHIP|GENERAL
+paraguay citizenship|4984|Low|65|CITIZENSHIP|LATAM
+malta cbi|4930|Very low|67|CITIZENSHIP|EUROPE
+vanuatu passport|4930|Low|60|CITIZENSHIP|PACIFIC
+2nd passport|4917|Low|57|CITIZENSHIP|GENERAL
+nauru passport|4908|Low|62|CITIZENSHIP|PACIFIC
+st kitts and nevis passport|4871|Low|60|CITIZENSHIP|CARIBBEAN
+serbian citizenship|4844|Low|64|CITIZENSHIP|BALKANS
+malta passport|4837|Very low|67|CITIZENSHIP|EUROPE
+buy passport|4812|Low|61|CITIZENSHIP|GENERAL
+2nd citizenship|4783|Low|57|CITIZENSHIP|GENERAL
+argentina citizenship|4749|Low|65|CITIZENSHIP|LATAM
+german citizenship|4721|Low|60|CITIZENSHIP|EUROPE
+italian citizenship|4672|Low|62|CITIZENSHIP|EUROPE
+turkey citizenship by investment|4665|Low|59|CITIZENSHIP|TURKEY
+portugal citizenship|4663|Low|61|CITIZENSHIP|EUROPE
+st kitts and nevis citizenship by investment|4612|Very low|66|CITIZENSHIP|CARIBBEAN
+citizenship by investment|4606|Low|57|CITIZENSHIP|GENERAL
+panama passport|4581|Very low|68|CITIZENSHIP|LATAM
+caribbean passport|4532|Low|61|CITIZENSHIP|CARIBBEAN
+french citizenship|4525|Medium|55|CITIZENSHIP|EUROPE
+turkish citizenship by investment|4519|Low|59|CITIZENSHIP|TURKEY
+how to get citizenship|4501|Low|59|CITIZENSHIP|GENERAL
+eu passport|4484|Low|58|CITIZENSHIP|EUROPE
+dual citizen|4440|Medium|54|CITIZENSHIP|GENERAL
+malta passport by investment|4433|Very low|67|CITIZENSHIP|EUROPE
+best second passport|4414|Low|60|CITIZENSHIP|GENERAL
+renounce us citizenship|4406|Low|58|CITIZENSHIP|USA
+plan b passport|4398|Very low|67|CITIZENSHIP|GENERAL
+golden visa|11537|Medium|56|GOLDEN|GENERAL
+golden visa portugal|7602|Very low|71|GOLDEN|EUROPE
+golden visa europe|5276|Very low|66|GOLDEN|EUROPE
+hungary golden visa|5261|Very low|67|GOLDEN|EUROPE
+portugal golden visa program|5097|Very low|65|GOLDEN|EUROPE
+portugal golden visa|5082|Low|64|GOLDEN|EUROPE
+portugal golden visa for americans|5038|Low|65|GOLDEN|USA
+bulgaria golden visa|4984|Very low|66|GOLDEN|EUROPE
+greece residency by investment|4947|Very low|68|GOLDEN|EUROPE
+golden visa comparison|4875|Low|63|GOLDEN|GENERAL
+italy golden visa|4849|Low|64|GOLDEN|EUROPE
+latvian golden visa|4844|Low|65|GOLDEN|EUROPE
+creators hq golden visa|4743|Very low|68|GOLDEN|GENERAL
+portugal golden visa funds|4743|Low|62|GOLDEN|EUROPE
+greek golden visa|4699|Low|62|GOLDEN|EUROPE
+greece golden visa|4682|Low|64|GOLDEN|EUROPE
+how to get a golden visa|4613|Very low|68|GOLDEN|GENERAL
+romania golden visa|4599|Very low|68|GOLDEN|EUROPE
+hungarian golden visa|4571|Low|64|GOLDEN|EUROPE
+how to get greece residency by investment|4522|Very low|69|GOLDEN|EUROPE
+panama golden visa|4429|Very low|66|GOLDEN|LATAM
+latvia residency by investment|4405|Very low|67|GOLDEN|EUROPE
+best golden visa in europe|4322|Low|64|GOLDEN|EUROPE
+cheapest golden visa in europe|4274|Very low|65|GOLDEN|EUROPE
+latvia golden visa|4273|Low|62|GOLDEN|EUROPE
+paraguay residency by investment|4235|Low|63|GOLDEN|LATAM
+malta residency by investment|4147|Very low|68|GOLDEN|EUROPE
+portugal golden visa benefits|4115|Very low|65|GOLDEN|EUROPE
+portugal golden visa fund|3853|Low|63|GOLDEN|EUROPE
+portugal residency by investment|3845|Very low|67|GOLDEN|EUROPE
+get golden visa|3779|Low|63|GOLDEN|GENERAL
+residence by investment|3727|Very low|65|GOLDEN|GENERAL
+portugal golden visa investment funds|3708|Very low|66|GOLDEN|EUROPE
+greece golden visa program|3674|Very low|64|GOLDEN|EUROPE
+spain golden visa|3620|Low|64|GOLDEN|EUROPE
+golden visas|3531|Medium|51|GOLDEN|GENERAL
+europe golden visa|3473|Very low|65|GOLDEN|EUROPE
+new zealand golden visa|3457|Low|61|GOLDEN|GENERAL
+golden visa greece|3344|Very low|64|GOLDEN|EUROPE
+golden visa countries|3344|Low|62|GOLDEN|GENERAL
+greece golden visa requirements|400|Very low|37|GOLDEN|EUROPE
+greece vs portugal golden visa|400|Very low|37|GOLDEN|EUROPE
+golden visa italy|400|Very low|36|GOLDEN|EUROPE
+portugal golden visa requirements|400|Very low|36|GOLDEN|EUROPE
+bulgaria residency by investment|400|Very low|36|GOLDEN|EUROPE
+malta golden visa|400|Very low|36|GOLDEN|EUROPE
+hungary residency by investment|400|Very low|35|GOLDEN|EUROPE
+greece golden visa update|400|Very low|35|GOLDEN|EUROPE
+portugal golden visa changes|400|Very low|34|GOLDEN|EUROPE
+how to get a latvian golden visa|400|Very low|34|GOLDEN|EUROPE
+european golden visa programs|400|Very low|34|GOLDEN|EUROPE
+how to apply for greece golden visa|400|Very low|34|GOLDEN|EUROPE
+greece golden visa process|400|Very low|34|GOLDEN|EUROPE
+how to get golden visa for europe|400|Very low|33|GOLDEN|EUROPE
+portugal golden visa update|400|Very low|33|GOLDEN|EUROPE
+portugal golden visa alternatives|400|Very low|33|GOLDEN|EUROPE
+greece golden visa changes|400|Very low|33|GOLDEN|EUROPE
+greece golden visa 250k|400|Low|32|GOLDEN|EUROPE
+europe residency by investment|400|Very low|32|GOLDEN|EUROPE
+eu residency by investment|400|Low|31|GOLDEN|EUROPE
+tax residency|17535|Low|65|RESIDENCE|GENERAL
+residency|12875|Medium|56|RESIDENCE|GENERAL
+work permit|10529|Medium|56|RESIDENCE|GENERAL
+paraguay tax residency|5400|Low|65|RESIDENCE|LATAM
+paraguay pr|5316|Medium|50|RESIDENCE|LATAM
+permanent residency paraguay|5211|Very low|68|RESIDENCE|LATAM
+serbia residency|5210|Very low|67|RESIDENCE|BALKANS
+paraguay temporary residency|5177|Very low|70|RESIDENCE|LATAM
+vanuatu permanent residency|5100|Very low|69|RESIDENCE|PACIFIC
+uruguay permanent residency|5081|Very low|67|RESIDENCE|LATAM
+eu residency|5076|Low|61|RESIDENCE|EUROPE
+portugal d7 visa|4947|Very low|67|RESIDENCE|EUROPE
+portugal residency|4856|Very low|68|RESIDENCE|EUROPE
+residency visa|4814|Low|61|RESIDENCE|GENERAL
+permanent residency in paraguay|4803|Very low|67|RESIDENCE|LATAM
+ecuador residency|4619|Very low|69|RESIDENCE|LATAM
+japan permanent residency|4610|Low|61|RESIDENCE|ASIA
+how to get paraguay residency|4517|Very low|67|RESIDENCE|LATAM
+paraguay residency|4428|Very low|65|RESIDENCE|LATAM
+latvia residency|4339|Very low|66|RESIDENCE|EUROPE
+permanent residence|4084|Low|58|RESIDENCE|GENERAL
+best countries to immigrate to|4074|Low|60|RESIDENCE|GENERAL
+permanent residency|3977|Medium|51|RESIDENCE|GENERAL
+mexico residency|3928|Very low|65|RESIDENCE|LATAM
+paraguay permanent residency|3711|Low|59|RESIDENCE|LATAM
+how to get residency in paraguay|3636|Very low|67|RESIDENCE|LATAM
+mexican residency|3566|Low|63|RESIDENCE|LATAM
+residence permit|3492|Low|63|RESIDENCE|GENERAL
+malta residency|3452|Very low|68|RESIDENCE|EUROPE
+paraguay residency process|3448|Low|63|RESIDENCE|LATAM
+d7 visa portugal|3424|Very low|68|RESIDENCE|EUROPE
+panama residency|3415|Very low|65|RESIDENCE|LATAM
+cheapest residency|3369|Very low|66|RESIDENCE|GENERAL
+easy residency countries|3283|Very low|66|RESIDENCE|GENERAL
+paraguay immigration|3259|Very low|67|RESIDENCE|LATAM
+greece residency|400|Very low|38|RESIDENCE|EUROPE
+how i got paraguay residency in one trip|400|Very low|38|RESIDENCE|LATAM
+panama banking residence|400|Very low|37|RESIDENCE|LATAM
+permanent residency hungary|400|Very low|37|RESIDENCE|EUROPE
+hungarian residency|400|Very low|37|RESIDENCE|EUROPE
+antigua residency|400|Very low|37|RESIDENCE|CARIBBEAN
+south american residency|400|Very low|37|RESIDENCE|LATAM
+residence in europe|400|Very low|36|RESIDENCE|EUROPE
+how to get residency in greece|400|Very low|36|RESIDENCE|EUROPE
+mercosur residency|400|Very low|36|RESIDENCE|LATAM
+schengen residency|400|Very low|35|RESIDENCE|EUROPE
+latvian residency|400|Very low|35|RESIDENCE|EUROPE
+countries that gives instant permanent residency|400|Very low|35|RESIDENCE|GENERAL
+countries with easy residency|400|Very low|35|RESIDENCE|GENERAL
+plan b residency|400|Very low|34|RESIDENCE|GENERAL
+hungary residency|400|Very low|34|RESIDENCE|EUROPE
+central american residency|400|Very low|34|RESIDENCE|LATAM
+easiest countries for residency|400|Very low|34|RESIDENCE|GENERAL
+temporary residency|400|Very low|34|RESIDENCE|GENERAL
+permanent residency in europe|400|Very low|34|RESIDENCE|EUROPE
+paraguay residency requirements|400|Very low|34|RESIDENCE|LATAM
+paraguay residency for americans|400|Very low|34|RESIDENCE|LATAM
+prospera residency|400|Very low|34|RESIDENCE|LATAM
+european residency|400|Very low|33|RESIDENCE|EUROPE
+backup residency|400|Very low|33|RESIDENCE|GENERAL
+digital nomad visa spain|13798|Low|69|NOMAD|EUROPE
+digital nomad visa|13369|Low|63|NOMAD|EUROPE
+nomad visa|11378|Low|64|NOMAD|GENERAL
+spain digital nomad visa|9853|Low|64|NOMAD|EUROPE
+brazil digital nomad visa|5359|Low|65|NOMAD|LATAM
+digital nomad visa italy|5319|Low|61|NOMAD|EUROPE
+best countries for digital nomads|5298|Very low|67|NOMAD|EUROPE
+digital nomad visa portugal|5122|Very low|70|NOMAD|EUROPE
+colombia digital nomad visa|5085|Very low|67|NOMAD|LATAM
+how to apply for digital nomad visa|5072|Very low|69|NOMAD|EUROPE
+d8 visa portugal|4971|Very low|70|NOMAD|EUROPE
+malta digital nomad visa|4911|Low|64|NOMAD|EUROPE
+estonia digital nomad|4891|Very low|66|NOMAD|EUROPE
+remote work visa|4840|Very low|65|NOMAD|GENERAL
+spain nomad visa|4653|Very low|68|NOMAD|EUROPE
+digital nomad visa europe|4635|Very low|66|NOMAD|EUROPE
+best digital nomad visa|4599|Low|62|NOMAD|EUROPE
+portugal d8 visa|4567|Very low|65|NOMAD|EUROPE
+italy digital nomad visa|4215|Low|58|NOMAD|EUROPE
+colombia digital nomad|3595|Low|63|NOMAD|LATAM
+digital nomad visas|3494|Low|59|NOMAD|GENERAL
+how to apply for digital nomad visa spain|3314|Very low|67|NOMAD|EUROPE
+portugal digital nomad visa|3305|Low|63|NOMAD|EUROPE
+digital nomad visa requirements|3302|Very low|64|NOMAD|EUROPE
+spain digital nomad visa requirements|3280|Very low|64|NOMAD|EUROPE
+digital nomad residency|400|Very low|38|NOMAD|EUROPE
+cheapest digital nomad visa|400|Very low|35|NOMAD|GENERAL
+eastern europe's new digital nomad visa|400|Very low|35|NOMAD|EUROPE
+top 10 countries with digital nomad visas|400|Very low|34|NOMAD|GENERAL
+digital nomad visa in italy|400|Very low|34|NOMAD|EUROPE
+best digital nomad visa europe|400|Very low|32|NOMAD|EUROPE
+italian digital nomad visa|400|Low|30|NOMAD|EUROPE
+estonia digital nomad visa|400|Low|29|NOMAD|EUROPE
+spain new digital nomad visa|400|Low|29|NOMAD|EUROPE
+digital nomad visa eu|400|Low|29|NOMAD|EUROPE
+spain digital nomad visa news|400|Low|29|NOMAD|EUROPE
+new digital nomad visa|400|Low|29|NOMAD|EUROPE
+d2 visa portugal|7492|Very low|70|STARTUP|EUROPE
+portugal d2 visa entrepreneur visa|5294|Very low|69|STARTUP|EUROPE
+netherlands work visa|4815|Low|62|STARTUP|EUROPE
+japan startup visa|4454|Very low|69|STARTUP|ASIA
+d2 entrepreneur visa|4454|Very low|66|STARTUP|GENERAL
+portugal startup visa|4302|Low|64|STARTUP|EUROPE
+entrepreneur visa|4266|Low|63|STARTUP|GENERAL
+startup visa|4175|Very low|65|STARTUP|GENERAL
+portugal d2 visa|4039|Low|63|STARTUP|EUROPE
+entrepreneur visa portugal|3953|Very low|67|STARTUP|EUROPE
+portugal d2 visa for indian|3933|Very low|66|STARTUP|ASIA
+portugal d2 visa for pakistani|3793|Very low|66|STARTUP|ASIA
+portugal entrepreneur visa|3719|Very low|65|STARTUP|EUROPE
+startup visa portugal|3448|Very low|68|STARTUP|EUROPE
+startup visa usa|3391|Low|63|STARTUP|USA
+latvia startup visa|400|Very low|39|STARTUP|EUROPE
+d2 startup visa portugal|400|Very low|39|STARTUP|EUROPE
+portugal startup visa program|400|Very low|38|STARTUP|EUROPE
+startup visa netherlands|400|Very low|37|STARTUP|GENERAL
+startup visa japan|400|Very low|37|STARTUP|ASIA
+portugal residence visa for entrepreneurs|400|Very low|37|STARTUP|EUROPE
+netherlands startup work permit|400|Very low|36|STARTUP|EUROPE
+portugal d2 visa requirements|400|Very low|36|STARTUP|EUROPE
+startup visa canada|400|Very low|35|STARTUP|GENERAL
+us startup visa|400|Very low|35|STARTUP|USA
+startup visa spain|400|Very low|34|STARTUP|EUROPE
+startup visa uk|400|Low|30|STARTUP|GENERAL
+us startup founder visa|400|Low|30|STARTUP|USA
+eb5 investment visa|5388|Very low|70|INVESTOR|USA
+us business visa|5300|Low|65|INVESTOR|USA
+eb-5 visa|5198|Very low|67|INVESTOR|USA
+eb-5 immigrant investor program|5069|Very low|68|INVESTOR|USA
+eb 5 visa|4898|Low|62|INVESTOR|USA
+investor visa usa|4853|Very low|67|INVESTOR|USA
+paraguay investor pass|4747|Very low|67|INVESTOR|LATAM
+usa business visa|4572|Very low|66|INVESTOR|USA
+l1 visa|4562|Low|63|INVESTOR|USA
+eb5 visa|4292|Low|64|INVESTOR|USA
+usa investor visa|4258|Low|60|INVESTOR|USA
+eb-5 visa program|3962|Very low|66|INVESTOR|USA
+italy investor visa|3639|Low|63|INVESTOR|EUROPE
+portugal investment visa|3529|Very low|67|INVESTOR|EUROPE
+new zealand investment visa|3454|Very low|64|INVESTOR|GENERAL
+greece investment visa|3447|Very low|68|INVESTOR|EUROPE
+panama qualified investor visa|3398|Low|63|INVESTOR|LATAM
+hungary guest investor visa|400|Very low|38|INVESTOR|EUROPE
+eb5 program|400|Very low|37|INVESTOR|USA
+greece investor visa|400|Very low|37|INVESTOR|EUROPE
+eb5 visa process|400|Very low|36|INVESTOR|USA
+investor visa program usa|400|Very low|36|INVESTOR|USA
+eb5 visa investment program|400|Very low|35|INVESTOR|USA
+eb5 visa explained|400|Very low|35|INVESTOR|USA
+investor visa program|400|Very low|34|INVESTOR|GENERAL
+immigrant investor program|400|Very low|33|INVESTOR|GENERAL
+portugal investor visa|400|Very low|33|INVESTOR|EUROPE
+investor visa|400|Low|30|INVESTOR|GENERAL
+visa free travel|7348|Low|66|POWER|GENERAL
+passport power|5277|Low|62|POWER|GENERAL
+strongest passport|5092|Low|60|POWER|GENERAL
+best passport|5039|Medium|56|POWER|GENERAL
+visa free countries|4260|Low|61|POWER|GENERAL
+best passports|3741|Low|59|POWER|GENERAL
+most powerful passports|3504|Low|56|POWER|GENERAL
+visa free|3446|Low|58|POWER|GENERAL
+armenian passport visa free countries|400|Very low|38|POWER|CAUCASUS
+`;
+const RU=`
+гражданство аргентины|10238|Low|67|CITIZENSHIP|LATAM
+паспорт турции|9814|Very low|71|CITIZENSHIP|TURKEY
+гражданство испании|8790|Very low|68|CITIZENSHIP|EUROPE
+гражданство италии|5402|Low|63|CITIZENSHIP|EUROPE
+где проще всего получить второе гражданство|5389|Very low|67|CITIZENSHIP|GENERAL
+паспорт ес|5377|Low|64|CITIZENSHIP|EUROPE
+гражданства за инвестиции|5371|Very low|67|CITIZENSHIP|GENERAL
+паспорт по рождению|5366|Very low|70|CITIZENSHIP|GENERAL
+второй паспорт|5326|Low|61|CITIZENSHIP|GENERAL
+гражданство турции за инвестиции|5310|Very low|66|CITIZENSHIP|TURKEY
+гражданство|5276|Low|59|CITIZENSHIP|GENERAL
+гражданство румынии отказ|5251|Low|61|CITIZENSHIP|BALKANS
+как получить гражданство|5238|Low|64|CITIZENSHIP|GENERAL
+польский паспорт|5225|Very low|68|CITIZENSHIP|EUROPE
+гражданство парагвая|5206|Very low|67|CITIZENSHIP|LATAM
+гражданство ес для россиян|5205|Very low|67|CITIZENSHIP|EUROPE
+гражданство румынии по корням|5195|Very low|66|CITIZENSHIP|EUROPE
+румынский паспорт|5184|Very low|66|CITIZENSHIP|EUROPE
+болгарское гражданство|5154|Very low|70|CITIZENSHIP|EUROPE
+инвестиционное гражданство|5096|Very low|68|CITIZENSHIP|GENERAL
+гражданство за инвестиции|5094|Very low|68|CITIZENSHIP|GENERAL
+гражданство турции через инвестиции|5063|Low|64|CITIZENSHIP|TURKEY
+паспорт португалии|5008|Very low|66|CITIZENSHIP|EUROPE
+гражданство франции|5002|Very low|67|CITIZENSHIP|EUROPE
+гражданство сербии|4988|Very low|68|CITIZENSHIP|BALKANS
+паспорт турции за инвестиции|4905|Very low|67|CITIZENSHIP|TURKEY
+паспорт армении|4898|Very low|67|CITIZENSHIP|CAUCASUS
+кипр гражданство|4859|Very low|69|CITIZENSHIP|EUROPE
+как получить второе гражданство|4849|Very low|69|CITIZENSHIP|GENERAL
+самый быстрый способ получить паспорт ес|4843|Very low|70|CITIZENSHIP|EUROPE
+паспорт словении|4774|Very low|71|CITIZENSHIP|EUROPE
+гренада паспорт|4772|Very low|68|CITIZENSHIP|CARIBBEAN
+паспорт мексики|4725|Very low|67|CITIZENSHIP|LATAM
+паспорт латинской америки|4710|Very low|70|CITIZENSHIP|LATAM
+гражданство ирландии|4697|Low|64|CITIZENSHIP|EUROPE
+гражданство румынии|4659|Low|63|CITIZENSHIP|EUROPE
+гражданство португалии|4655|Very low|68|CITIZENSHIP|EUROPE
+гражданство по корням|4596|Very low|68|CITIZENSHIP|GENERAL
+паспорт аргентины|4577|Very low|66|CITIZENSHIP|LATAM
+второй паспорт для россиян|4547|Very low|67|CITIZENSHIP|GENERAL
+двойное гражданство|4522|Low|61|CITIZENSHIP|GENERAL
+гражданство люксембурга|4468|Very low|69|CITIZENSHIP|EUROPE
+паспорт вануату|4435|Very low|65|CITIZENSHIP|PACIFIC
+паспорт|4406|Medium|56|CITIZENSHIP|GENERAL
+гражданство венгрии|4398|Very low|67|CITIZENSHIP|EUROPE
+паспорт германии|4384|Low|64|CITIZENSHIP|EUROPE
+гражданство мальты|4372|Low|63|CITIZENSHIP|EUROPE
+румынский паспорт репатриация|4334|Very low|68|CITIZENSHIP|EUROPE
+гражданство австрии|4323|Very low|65|CITIZENSHIP|EUROPE
+гражданство мексики|4307|Very low|65|CITIZENSHIP|LATAM
+паспорт румынии|4299|Very low|68|CITIZENSHIP|BALKANS
+паспорт сербии|4240|Very low|67|CITIZENSHIP|BALKANS
+золотые паспорта|4218|Medium|56|CITIZENSHIP|GENERAL
+гражданство европейского союза|4179|Low|63|CITIZENSHIP|EUROPE
+гражданство кипра|4012|Very low|66|CITIZENSHIP|EUROPE
+гражданство карибских стран|4005|Very low|67|CITIZENSHIP|CARIBBEAN
+получение гражданства ес|3926|Very low|68|CITIZENSHIP|EUROPE
+второе гражданство для россиян|3915|Very low|65|CITIZENSHIP|GENERAL
+второе гражданство|3842|Low|63|CITIZENSHIP|GENERAL
+гражданство ес|3792|Low|62|CITIZENSHIP|EUROPE
+golden visa portugal|7602|Very low|71|GOLDEN|EUROPE
+золотая виза греция|4453|Low|57|GOLDEN|EUROPE
+золотая виза испания|4431|Low|64|GOLDEN|EUROPE
+золотая виза греции|3513|Low|60|GOLDEN|EUROPE
+золотая виза кипра|400|Very low|39|GOLDEN|EUROPE
+внж португалии за инвестиции|400|Very low|38|GOLDEN|EUROPE
+испанская золотая виза|400|Very low|37|GOLDEN|EUROPE
+внж через инвестиции|400|Very low|37|GOLDEN|GENERAL
+инвестиционный внж|400|Very low|37|GOLDEN|GENERAL
+что дает золотая виза|400|Very low|36|GOLDEN|GENERAL
+португальская золотая виза|400|Very low|36|GOLDEN|EUROPE
+греция золотая виза|400|Very low|35|GOLDEN|EUROPE
+внж за инвестиции|400|Very low|35|GOLDEN|GENERAL
+пмж за инвестиции|400|Very low|35|GOLDEN|GENERAL
+внж венгрии за инвестиции|400|Very low|35|GOLDEN|EUROPE
+золотая виза в европе|400|Very low|34|GOLDEN|EUROPE
+внж греции за инвестиции|400|Very low|34|GOLDEN|EUROPE
+стоимость golden visa|400|Very low|34|GOLDEN|GENERAL
+пмж кипра за инвестиции|400|Very low|34|GOLDEN|EUROPE
+вид на жительство за инвестиции|400|Very low|33|GOLDEN|GENERAL
+золотая виза португалии|400|Very low|33|GOLDEN|EUROPE
+золотая виза венгрии|400|Very low|33|GOLDEN|EUROPE
+золотая виза испании|400|Low|32|GOLDEN|EUROPE
+золотая виза европа|400|Low|32|GOLDEN|EUROPE
+внж за инвестиции европа|400|Very low|32|GOLDEN|EUROPE
+внж мальты за инвестиции|400|Low|32|GOLDEN|EUROPE
+золотая виза в испании|400|Low|31|GOLDEN|EUROPE
+золотая виза португалия|400|Low|31|GOLDEN|EUROPE
+как получить золотую визу|400|Low|30|GOLDEN|GENERAL
+золотая виза|400|Low|29|GOLDEN|GENERAL
+жизнь в испании|34561|Low|71|RESIDENCE|EUROPE
+жизнь в италии|32408|Low|69|RESIDENCE|EUROPE
+жизнь в португалии|17008|Low|69|RESIDENCE|EUROPE
+жизнь в барселоне|16170|Low|69|RESIDENCE|EUROPE
+эмиграция в сербию|14071|Low|69|RESIDENCE|GENERAL
+переезд в европу|13930|Low|68|RESIDENCE|GENERAL
+куда переехать|13786|Low|63|RESIDENCE|GENERAL
+жизнь в европе|13728|Low|66|RESIDENCE|GENERAL
+внж испании|13456|Low|65|RESIDENCE|EUROPE
+эмиграция в испанию|10733|Very low|68|RESIDENCE|EUROPE
+внж грузии|10258|Very low|68|RESIDENCE|CAUCASUS
+переезд в испанию|9263|Very low|70|RESIDENCE|EUROPE
+переезд в португалию|8931|Low|66|RESIDENCE|EUROPE
+внж|8577|Low|62|RESIDENCE|GENERAL
+эмиграция из россии|8352|Medium|58|RESIDENCE|GENERAL
+страны для переезда из россии|7858|Low|65|RESIDENCE|GENERAL
+переезд в словению|7054|Very low|68|RESIDENCE|EUROPE
+стоит ли переезжать в испанию|6952|Very low|70|RESIDENCE|EUROPE
+переезд в барселону|6925|Very low|70|RESIDENCE|EUROPE
+переезд в турцию|6851|Very low|67|RESIDENCE|TURKEY
+внж италии|6819|Low|65|RESIDENCE|EUROPE
+как получить визу|6397|Very low|67|RESIDENCE|GENERAL
+внж как получить|5416|Low|64|RESIDENCE|GENERAL
+как оформить внж|5401|Very low|69|RESIDENCE|GENERAL
+переезд в венгрию|5391|Very low|68|RESIDENCE|EUROPE
+внж словении|5379|Low|62|RESIDENCE|EUROPE
+move to portugal|5346|Low|60|RESIDENCE|EUROPE
+внж в ес|5289|Very low|68|RESIDENCE|EUROPE
+италия переезд|5257|Low|64|RESIDENCE|EUROPE
+внж в испании|5255|Low|62|RESIDENCE|EUROPE
+portugal visa|5243|Very low|66|RESIDENCE|EUROPE
+как переехать из россии|5180|Low|58|RESIDENCE|GENERAL
+бизнес в испании|5174|Low|65|RESIDENCE|EUROPE
+внж сербии через ип|5149|Very low|71|RESIDENCE|BALKANS
+иммиграция в испанию|5120|Low|63|RESIDENCE|EUROPE
+пмж в турции|5081|Very low|68|RESIDENCE|TURKEY
+куда переехать на пмж|5063|Low|64|RESIDENCE|GENERAL
+жизнь в ес|5044|Low|63|RESIDENCE|GENERAL
+иммиграция в италию плюсы и минусы|5007|Low|65|RESIDENCE|EUROPE
+внж португалии|4949|Low|63|RESIDENCE|EUROPE
+внж в сербии|4877|Low|64|RESIDENCE|BALKANS
+пмж|4875|Medium|54|RESIDENCE|GENERAL
+внж европы|4867|Very low|68|RESIDENCE|EUROPE
+portugal residency|4856|Very low|68|RESIDENCE|EUROPE
+внж испания|4849|Very low|65|RESIDENCE|EUROPE
+внж в турции|4820|Low|61|RESIDENCE|TURKEY
+вид на жительство|4764|Low|62|RESIDENCE|GENERAL
+испания пмж|4755|Very low|67|RESIDENCE|EUROPE
+внж сербии для россиян|4739|Very low|70|RESIDENCE|BALKANS
+пмж италия|4707|Low|64|RESIDENCE|EUROPE
+кипр внж|4650|Very low|68|RESIDENCE|EUROPE
+как получить внж в италии|4650|Low|63|RESIDENCE|EUROPE
+внж греции|4603|Very low|67|RESIDENCE|EUROPE
+иммиграция для россиян|4590|Very low|67|RESIDENCE|GENERAL
+легализация в испании|4525|Low|58|RESIDENCE|EUROPE
+как переехать в европу|4506|Low|62|RESIDENCE|GENERAL
+эмиграция в италию|4503|Low|65|RESIDENCE|EUROPE
+виза d7 португалия|4471|Very low|68|RESIDENCE|EUROPE
+работа в италии|4408|Low|64|RESIDENCE|EUROPE
+бизнес в италии|4396|Very low|65|RESIDENCE|EUROPE
+цифровые кочевники|7673|Low|63|NOMAD|GENERAL
+цифровой кочевник|5322|Low|61|NOMAD|GENERAL
+portugal d7|5315|Low|62|NOMAD|EUROPE
+виза цифрового кочевника|5253|Low|64|NOMAD|GENERAL
+италия digital nomad|5024|Very low|69|NOMAD|EUROPE
+digital nomad словения|4992|Very low|70|NOMAD|EUROPE
+d7 visa|4881|Very low|66|NOMAD|GENERAL
+d7 португалия|4551|Very low|66|NOMAD|EUROPE
+цифровой кочевник испания|4244|Very low|69|NOMAD|EUROPE
+digital nomad португалия|4089|Low|62|NOMAD|EUROPE
+digital nomad portugal|4087|Very low|67|NOMAD|EUROPE
+digital nomad visa spain|4051|Low|62|NOMAD|EUROPE
+внж цифрового кочевника испания|3645|Very low|67|NOMAD|EUROPE
+виза цифрового кочевника испания|3615|Very low|66|NOMAD|EUROPE
+цифровой кочевник черногория|3467|Very low|67|NOMAD|BALKANS
+виза фрилансера италия|3412|Very low|67|NOMAD|EUROPE
+digital nomad черногория|400|Very low|38|NOMAD|BALKANS
+внж номада испания|400|Very low|38|NOMAD|EUROPE
+виза d8 португалия|400|Very low|37|NOMAD|EUROPE
+номад виза португалия|400|Very low|37|NOMAD|EUROPE
+номад виза|400|Very low|36|NOMAD|GENERAL
+внж цифрового кочевника|400|Very low|33|NOMAD|GENERAL
+виза цифрового кочевника в италии|400|Very low|32|NOMAD|EUROPE
+виза таланта|4602|Low|61|STARTUP|GENERAL
+стартап виза испания|3926|Low|62|STARTUP|EUROPE
+стартап виза в италию|400|Very low|39|STARTUP|EUROPE
+виза d2 португалия|400|Very low|37|STARTUP|EUROPE
+второе гражданство для предпринимателей|400|Very low|36|STARTUP|GENERAL
+внж предпринимателя испания|400|Very low|35|STARTUP|EUROPE
+стартап виза португалия|400|Very low|34|STARTUP|EUROPE
+italy startup visa|400|Very low|34|STARTUP|EUROPE
+стартап виза|400|Low|29|STARTUP|GENERAL
+стартап виза испании|400|Low|27|STARTUP|EUROPE
+виза за инвестиции|5152|Low|63|INVESTOR|GENERAL
+инвестиционная виза греция|400|Very low|36|INVESTOR|EUROPE
+инвестиционная виза португалии|400|Very low|35|INVESTOR|EUROPE
+malta individual investor program|400|Very low|35|INVESTOR|EUROPE
+лучшие паспорта мира|5021|Low|60|POWER|GENERAL
+`;
+
+const TYPE_LABEL={en:{GOLDEN:"Golden Visa",CITIZENSHIP:"Citizenship",RESIDENCE:"Residency",STARTUP:"Startup visa",INVESTOR:"Investor visa",NOMAD:"Digital nomad",POWER:"Passport power"},
+ ru:{GOLDEN:"\u0417\u043e\u043b\u043e\u0442\u044b\u0435 \u0432\u0438\u0437\u044b",CITIZENSHIP:"\u0413\u0440\u0430\u0436\u0434\u0430\u043d\u0441\u0442\u0432\u043e",RESIDENCE:"\u0412\u041d\u0416 \u0438 \u041f\u041c\u0416",STARTUP:"\u0421\u0442\u0430\u0440\u0442\u0430\u043f-\u0432\u0438\u0437\u044b",INVESTOR:"\u0418\u043d\u0432\u0435\u0441\u0442-\u0432\u0438\u0437\u044b",NOMAD:"\u0426\u0438\u0444\u0440\u043e\u0432\u043e\u0439 \u043a\u043e\u0447\u0435\u0432\u043d\u0438\u043a",POWER:"\u0421\u0438\u043b\u0430 \u043f\u0430\u0441\u043f\u043e\u0440\u0442\u0430"}};
+const REG_LABEL={en:{EUROPE:"Europe",BALKANS:"Balkans",CARIBBEAN:"Caribbean",LATAM:"Latin America",CAUCASUS:"Caucasus",USA:"USA",TURKEY:"Turkey",ASIA:"Asia",PACIFIC:"Pacific",GENERAL:"General"},
+ ru:{EUROPE:"\u0415\u0432\u0440\u043e\u043f\u0430",BALKANS:"\u0411\u0430\u043b\u043a\u0430\u043d\u044b",CARIBBEAN:"\u041a\u0430\u0440\u0438\u0431\u044b",LATAM:"\u041b\u0430\u0442. \u0410\u043c\u0435\u0440\u0438\u043a\u0430",CAUCASUS:"\u041a\u0430\u0432\u043a\u0430\u0437",USA:"\u0421\u0428\u0410",TURKEY:"\u0422\u0443\u0440\u0446\u0438\u044f",ASIA:"\u0410\u0437\u0438\u044f",PACIFIC:"\u041e\u043a\u0435\u0430\u043d\u0438\u044f",GENERAL:"\u041e\u0431\u0449\u0435\u0435"}};
+const COMP_LABEL={en:{"Very low":"Very low","Low":"Low","Medium":"Medium","High":"High","-":"\u2014"},
+ ru:{"Very low":"\u041e\u0447\u0435\u043d\u044c \u043d\u0438\u0437\u043a\u0430\u044f","Low":"\u041d\u0438\u0437\u043a\u0430\u044f","Medium":"\u0421\u0440\u0435\u0434\u043d\u044f\u044f","High":"\u0412\u044b\u0441\u043e\u043a\u0430\u044f","-":"\u2014"}};
+const ALL={en:"All",ru:"\u0412\u0441\u0435"};
+const RANK={"Very low":0,"Low":1,"Medium":2,"High":3,"-":9};
+const CLS={"Very low":"t-go","Low":"t-ok","Medium":"t-busy","High":"t-busy","-":""};
+
+const parse=s=>s.trim().split("\n").map(l=>{const p=l.split("|");
+  return {kw:p[0],vol:+p[1],comp:p[2]||"-",compN:RANK[p[2]]!==undefined?RANK[p[2]]:9,
+          score:p[3]==="-"||!p[3]?0:+p[3],typ:p[4],reg:p[5]};});
+const SETS={en:parse(EN),ru:parse(RU)};
+
+let lang="en", fT="all", fR="all", sortKey="vol", dir=-1;
+const body=document.getElementById("body");
+
+function chips(box,keys,labels,cur,cb){
+  const lbl=box.querySelector(".rlabel");
+  box.innerHTML=""; box.appendChild(lbl);
+  const mk=(v,text)=>{const b=document.createElement("button");
+    b.className="chip"; b.textContent=text; b.setAttribute("aria-pressed",String(v===cur));
+    b.addEventListener("click",()=>cb(v)); box.appendChild(b); return b;};
+  mk("all",ALL[lang]);
+  keys.forEach(k=>mk(k,labels[k]||k));
+  const c=document.createElement("span"); c.className="count"; c.id="count"; box.appendChild(c);
+}
+
+function rebuild(){
+  const rows=SETS[lang];
+  const ts=[...new Set(rows.map(r=>r.typ))].sort((a,b)=>
+    rows.filter(r=>r.typ===b).length-rows.filter(r=>r.typ===a).length);
+  const rs=[...new Set(rows.map(r=>r.reg))].sort((a,b)=>
+    rows.filter(r=>r.reg===b).length-rows.filter(r=>r.reg===a).length);
+  chips(document.getElementById("types"),ts,TYPE_LABEL[lang],fT,v=>{fT=v;rebuild();});
+  chips(document.getElementById("regions"),rs,REG_LABEL[lang],fR,v=>{fR=v;rebuild();});
+  render();
+}
+
+function render(){
+  const rows=SETS[lang];
+  const max=Math.max(...rows.map(r=>r.vol));
+  const list=rows.filter(r=>(fT==="all"||r.typ===fT)&&(fR==="all"||r.reg===fR))
+    .sort((a,b)=>{const x=a[sortKey],y=b[sortKey];
+      return typeof x==="string"?dir*x.localeCompare(y):dir*(x-y);});
+  body.innerHTML=list.map(r=>{
+    const w=Math.max(2,Math.round(Math.sqrt(r.vol/max)*100));
+    const vol=r.vol<=400?"&lt;750":r.vol.toLocaleString("ru-RU");
+    return "<tr><td class=\"kw\">"+r.kw+"</td><td class=\"num\">"+vol+"</td>"+
+      "<td class=\"barcell\"><div class=\"bar\" style=\"width:"+w+"%\"></div></td>"+
+      "<td><span class=\"tag "+(CLS[r.comp]||"")+"\">"+COMP_LABEL[lang][r.comp]+"</span></td>"+
+      "<td class=\"num\">"+(r.score||"\u2014")+"</td>"+
+      "<td class=\"clu\">"+(TYPE_LABEL[lang][r.typ]||r.typ)+"</td>"+
+      "<td class=\"clu\">"+(REG_LABEL[lang][r.reg]||r.reg)+"</td></tr>";
+  }).join("");
+  const c=document.getElementById("count");
+  if(c) c.textContent=list.length+(lang==="ru"?" \u0444\u0440\u0430\u0437":" phrases");
+}
+
+document.querySelectorAll(".chip.lang").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".chip.lang").forEach(o=>o.setAttribute("aria-pressed",String(o===b)));
+    lang=b.dataset.l; fT="all"; fR="all"; rebuild();});
+});
+document.querySelectorAll("th[data-k]").forEach(th=>{
+  th.addEventListener("click",()=>{const k=th.dataset.k;
+    if(sortKey===k) dir=-dir; else {sortKey=k; dir=(k==="kw"||k==="typ"||k==="reg"||k==="compN")?1:-1;}
+    document.querySelectorAll("th[data-k]").forEach(o=>o.removeAttribute("aria-sort"));
+    th.setAttribute("aria-sort",dir===1?"ascending":"descending"); render();});
+});
+rebuild();
+</script>
